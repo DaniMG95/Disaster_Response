@@ -1,16 +1,61 @@
 import sys
-
+import pandas as pd
+from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    """Load two datasets csv and merge them
+
+    Parameters:
+    messages_filepath (string): path of message csv
+    categories_filepath (string): path of categories csv
+
+    Returns:
+    dataframe:df
+
+    """
+    messages = pd.read_csv(messages_filepath)
+    categories = pd.read_csv(categories_filepath)
+    df = messages.merge(categories, left_on='id', right_on='id')
+    return df
 
 
 def clean_data(df):
-    pass
+    """Clean data, create labels, clean columns names and drop duplicates
+
+    Parameters:
+    df (dataframe): dataframe which we can clean
+
+    Returns:
+    dataframe:df
+
+    """
+    categories = df["categories"].str.split(";",expand=True)
+    row = categories.loc[0]
+    category_colnames = row.apply(lambda x: x[:-2]).tolist()
+    categories.columns = category_colnames
+    # set each value to be the last character of the string
+    for column in category_colnames:
+        categories[column] = categories[column].astype(str).str.replace(column+"-","")
+        # convert column from string to numeric
+        categories[column] = categories[column].astype(int)
+    df=df.drop(["categories"],axis=1)
+    df= pd.concat([df, categories],axis=1)
+    # drop duplicates
+    df.drop_duplicates(keep=False,inplace=True)
+    return df
 
 
 def save_data(df, database_filename):
-    pass  
+    """Save dataframe into a database
+
+    Parameters:
+    df (dataframe): dataframe which we can save
+    database_filename: path of database which we can save
+
+
+    """
+    engine = create_engine('sqlite:///'+database_filename)
+    df.to_sql(database_filename, engine, index=False)
 
 
 def main():
