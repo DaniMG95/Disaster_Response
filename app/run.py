@@ -1,14 +1,14 @@
 import json
 import plotly
 import pandas as pd
-
+import numpy as np
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
 from sqlalchemy import create_engine
 
 
@@ -26,11 +26,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('disaster', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -43,6 +43,15 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    
+    category_names = df.columns[4:].to_list()
+    category_counts = [df[category].sum() for category in category_names]
+
+    top5=np.argsort(category_counts)[-5:]
+
+    top5_categories_counts=[category_counts[i] for i in top5]
+    top5_category_names=[category_names[i] for i in top5]
+
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -61,6 +70,42 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top5_category_names,
+                    y=top5_categories_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution Top 5 Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
                 }
             }
         }
@@ -93,7 +138,7 @@ def go():
 
 
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
+    app.run(debug=True)
 
 
 if __name__ == '__main__':
