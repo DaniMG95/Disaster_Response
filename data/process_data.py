@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from sqlalchemy import create_engine
+import sqlalchemy as db
 
 def load_data(messages_filepath, categories_filepath):
     """Load two datasets csv and merge them
@@ -36,8 +36,11 @@ def clean_data(df):
     # set each value to be the last character of the string
     for column in category_colnames:
         categories[column] = categories[column].astype(str).str.replace(column+"-","")
+        #convert values 2 to 1
+        categories.related[categories[column]=="2"]="1"
         # convert column from string to numeric
         categories[column] = categories[column].astype(int)
+
     df=df.drop(["categories"],axis=1)
     df= pd.concat([df, categories],axis=1)
     # drop duplicates
@@ -54,8 +57,10 @@ def save_data(df, database_filename):
 
 
     """
-    engine = create_engine('sqlite:///'+database_filename)
-    df.to_sql(database_filename, engine, index=False)
+    engine = db.create_engine('sqlite:///'+database_filename)
+    sql = db.text('DROP TABLE IF EXISTS disaster;')
+    engine.execute(sql)
+    df.to_sql("disaster", engine, index=False)
 
 
 def main():
