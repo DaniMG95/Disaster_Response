@@ -22,6 +22,7 @@ pip install -r requirements.txt
 ### Structure of the project
 
 ```bash
+|   .gitignore
 │   README.md
 │   requirements.txt
 │
