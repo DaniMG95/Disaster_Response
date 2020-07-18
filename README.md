@@ -21,21 +21,25 @@ pip install -r requirements.txt
 
 ### Structure of the project
 
-- app
-| - template
-| |- master.html  # main page of web app
-| |- go.html  # classification result page of web app
-|- run.py  # Flask file that runs app
+```bash
+│   README.md
+│   requirements.txt
+│
+├───app
+│   │   run.py
+│   │
+│   └───templates
+│           go.html
+│           master.html
+│
+├───data
+│       DisasterResponse.db
+│       disaster_categories.csv
+│       disaster_messages.csv
+│       process_data.py
+│
+└───models
+        classifier.pkl
+        train_classifier.py
 
-- data
-|- disaster_categories.csv  # data to process 
-|- disaster_messages.csv  # data to process
-|- process_data.py
-|- InsertDatabaseName.db   # database to save clean data to
-
-- models
-|- train_classifier.py
-|- classifier.pkl  # saved model 
-
-- README.md
-- requirements.txt
+```
