@@ -1,5 +1,15 @@
 # Disaster_Response
 
+<img src="https://cdn.analyticsvidhya.com/wp-content/uploads/2020/01/pipe.png">
+
+This repository contains a system analyze disaster data from Figure Eight to build a model for an API that classifies disaster messages.  
+This project include a web app where an emergency worker can input a new message and get classification results in several categories. The web app will also display visualizations of the data.
+
+### Motivation
+
+The text analysis is a very striking technique because a lot of information that exists in almost all the datasets are flat texts and these techniques give us the possibility of obtaining very important data that are embedded in these flat texts. For example, the analysis of feelings.
+
+
 ### Instructions:
 
 1. Install Requirements
